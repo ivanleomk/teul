@@ -18,15 +18,24 @@ It provides a clean, type-safe, and boilerplate-free way to build robust command
 
 Teul provides its own CLI tool to instantly scaffold a new project with the framework pre-configured.
 
+**Option 1: Download Release Binary**
+1. Download the latest binary for your platform from the [Releases page](https://github.com/ivanleomk/teul/releases).
+2. Make it executable (`chmod +x teul`) and run it:
+```bash
+./teul init ./my-new-cli
+cd ./my-new-cli
+zig build run -- --help
+```
+
+**Option 2: Build from Source**
 ```bash
 # Clone the repository and build the teul binary
-git clone https://github.com/your-username/teul.git
+git clone https://github.com/ivanleomk/teul.git
 cd teul
-zig build
+zig build -Doptimize=ReleaseSafe
 
 # Initialize a new project in your target directory
 ./zig-out/bin/teul init ../my-new-cli
-
 cd ../my-new-cli
 zig build run -- --help
 ```
