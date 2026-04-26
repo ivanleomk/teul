@@ -24,6 +24,18 @@ pub fn build(b: *std.Build) void {
     exe_module.addAnonymousImport("template_main_zig", .{
         .root_source_file = b.path("templates/main.zig.template"),
     });
+    exe_module.addAnonymousImport("teul_zig", .{
+        .root_source_file = b.path("src/teul.zig"),
+    });
+    exe_module.addAnonymousImport("app_zig", .{
+        .root_source_file = b.path("src/app.zig"),
+    });
+    exe_module.addAnonymousImport("command_zig", .{
+        .root_source_file = b.path("src/command.zig"),
+    });
+    exe_module.addAnonymousImport("parser_zig", .{
+        .root_source_file = b.path("src/parser.zig"),
+    });
 
     const exe = b.addExecutable(.{
         .name = "teul",

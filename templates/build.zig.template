@@ -13,11 +13,12 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    const teul_dep = b.dependency("teul", .{
+    const teul_mod = b.createModule(.{
+        .root_source_file = b.path("src/teul/teul.zig"),
         .target = target,
         .optimize = optimize,
     });
-    exe.root_module.addImport("teul", teul_dep.module("teul"));
+    exe.root_module.addImport("teul", teul_mod);
 
     b.installArtifact(exe);
 

@@ -19,6 +19,12 @@ const InitCmd = struct {
         try dir.createDirPath(io, "src");
         try dir.writeFile(io, .{ .sub_path = "src/main.zig", .data = @embedFile("template_main_zig") });
 
+        try dir.createDirPath(io, "src/teul");
+        try dir.writeFile(io, .{ .sub_path = "src/teul/teul.zig", .data = @embedFile("teul_zig") });
+        try dir.writeFile(io, .{ .sub_path = "src/teul/app.zig", .data = @embedFile("app_zig") });
+        try dir.writeFile(io, .{ .sub_path = "src/teul/command.zig", .data = @embedFile("command_zig") });
+        try dir.writeFile(io, .{ .sub_path = "src/teul/parser.zig", .data = @embedFile("parser_zig") });
+
         std.debug.print("teul project created in '{s}'!\n", .{self.target});
     }
 };

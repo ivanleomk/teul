@@ -31,11 +31,15 @@ cd ../my-new-cli
 zig build run -- --help
 ```
 
-### Manual Installation (Library)
+The `init` tool vendors the framework files directly into your project's `src/teul/` directory, meaning the generated project has zero external dependencies! You can just build and run immediately.
+
+### Manual Installation (As a Dependency)
+
+If you prefer to install Teul as a traditional Zig package instead of scaffolding:
 
 1. Add Teul to your `build.zig.zon`:
 ```bash
-zig fetch --save git+https://github.com/your-username/teul.git
+zig fetch --save git+https://github.com/ivanleomk/teul.git
 ```
 
 2. Add the dependency to your `build.zig`:
