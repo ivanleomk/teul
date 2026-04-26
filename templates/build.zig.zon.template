@@ -1,0 +1,15 @@
+.{
+    .name = .teul_app,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.16.0",
+    .dependencies = .{
+        .teul = .{
+            .path = "../teul",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

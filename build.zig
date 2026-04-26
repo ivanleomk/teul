@@ -4,13 +4,30 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    _ = b.addModule("teul", .{
+        .root_source_file = b.path("src/teul.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const exe_module = b.createModule(.{
+        .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    exe_module.addAnonymousImport("template_build_zig", .{
+        .root_source_file = b.path("templates/build.zig.template"),
+    });
+    exe_module.addAnonymousImport("template_build_zig_zon", .{
+        .root_source_file = b.path("templates/build.zig.zon.template"),
+    });
+    exe_module.addAnonymousImport("template_main_zig", .{
+        .root_source_file = b.path("templates/main.zig.template"),
+    });
+
     const exe = b.addExecutable(.{
         .name = "teul",
-        .root_module = b.createModule(.{
-            .root_source_file = b.path("src/main.zig"),
-            .target = target,
-            .optimize = optimize,
-        }),
+        .root_module = exe_module,
     });
 
     b.installArtifact(exe);

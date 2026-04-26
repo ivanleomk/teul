@@ -3,15 +3,23 @@ const App = @import("app.zig").App;
 const Command = @import("command.zig").Command;
 const generateWrapper = @import("command.zig").generateWrapper;
 
-// 1. Define our strongly-typed Command object
-const AddCmd = struct {
-    target: []const u8, // Positional argument
-    verbose: bool = false, // Flag
+const InitCmd = struct {
+    target: []const u8 = "./", // Target directory
 
-    pub fn run(self: @This()) !void {
-        std.debug.print("🚀 Executing AddCmd!\n", .{});
-        std.debug.print("Target: {s}\n", .{self.target});
-        std.debug.print("Verbose Mode: {}\n", .{self.verbose});
+    pub fn run(self: @This(), init: std.process.Init) !void {
+        std.debug.print("Initializing teul project in '{s}'...\n", .{self.target});
+        const io = init.io; // The IO backend from program initialization
+
+        var dir = try std.Io.Dir.cwd().createDirPathOpen(io, self.target, .{});
+        defer dir.close(io);
+
+        try dir.writeFile(io, .{ .sub_path = "build.zig", .data = @embedFile("template_build_zig") });
+        try dir.writeFile(io, .{ .sub_path = "build.zig.zon", .data = @embedFile("template_build_zig_zon") });
+
+        try dir.createDirPath(io, "src");
+        try dir.writeFile(io, .{ .sub_path = "src/main.zig", .data = @embedFile("template_main_zig") });
+
+        std.debug.print("teul project created in '{s}'!\n", .{self.target});
     }
 };
 
@@ -35,14 +43,14 @@ pub fn main(init: std.process.Init) !void {
         .description = "The ultimate comptime CLI framework",
         .subcommands = &[_]Command{
             .{
-                .name = "add",
-                .description = "Add a new secret",
-                .run_fn = generateWrapper(AddCmd),
+                .name = "init",
+                .description = "Initialize a teul starter project",
+                .run_fn = generateWrapper(InitCmd),
             },
         },
     };
 
     // 3. Initialize the Router and Run!
     const app = App.init(root_cmd);
-    try app.run(allocator, args_list.items);
+    try app.run(allocator, args_list.items, init);
 }

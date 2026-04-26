@@ -9,7 +9,7 @@ pub const App = struct {
     }
 
     /// Walks the command tree using the provided arguments and executes the target command.
-    pub fn run(self: App, allocator: std.mem.Allocator, args: []const []const u8) !void {
+    pub fn run(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init) !void {
         if (args.len == 0) return;
 
         // Skip the executable name (e.g. `dogu`)
@@ -44,7 +44,7 @@ pub const App = struct {
         // 3. Execute the leaf command
         if (current_cmd.run_fn) |run_fn| {
             // We pass the remaining strings directly to the generated wrapper!
-            run_fn(allocator, current_args) catch |err| {
+            run_fn(allocator, current_args, app_init) catch |err| {
                 // Parse errors already printed a clean message — just exit.
                 switch (err) {
                     error.MissingRequiredArgument,
@@ -60,7 +60,6 @@ pub const App = struct {
         } else {
             // They targeted a "Group" command but didn't provide a valid subcommand.
             self.printUsage(current_cmd);
-            std.process.exit(1);
         }
     }
 
