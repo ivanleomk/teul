@@ -4,7 +4,7 @@ const Command = @import("command.zig").Command;
 const generateWrapper = @import("command.zig").generateWrapper;
 
 const InitCmd = struct {
-    target: []const u8 = "./", // Target directory
+    target: []const u8, // Target directory
 
     pub fn run(self: @This(), init: std.process.Init) !void {
         std.debug.print("Initializing teul project in '{s}'...\n", .{self.target});

@@ -34,5 +34,5 @@ pub fn main(init: std.process.Init) !void {
     };
 
     const app = teul.App.init(root_cmd);
-    try app.run(allocator, args_list.items);
+    try app.run(allocator, args_list.items, init);
 }
