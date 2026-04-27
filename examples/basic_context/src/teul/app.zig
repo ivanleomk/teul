@@ -1,34 +1,22 @@
 const std = @import("std");
 const command = @import("command.zig");
 
-pub const App = struct {
-    root: command.Command,
+pub fn App(comptime CtxType: type) type {
+    return struct {
+        root: command.Command(CtxType),
 
-    pub fn init(root: command.Command) App {
-        return .{ .root = root };
-    }
-
-    pub fn run(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init) !void {
-        try self.runInternal(allocator, args, app_init, null);
-    }
-
-    /// Walks the command tree using the provided arguments and executes the target command,
-    /// passing the provided context to the command's run function.
-    pub fn runWithContext(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init, ctx: anytype) !void {
-        const ptr_info = @typeInfo(@TypeOf(ctx));
-        if (ptr_info != .pointer) {
-            @compileError("Context must be a pointer type");
+        pub fn init(root: command.Command(CtxType)) App(CtxType) {
+            return .{ .root = root };
         }
-        const opaque_ctx: ?*anyopaque = @ptrCast(ctx);
-        try self.runInternal(allocator, args, app_init, opaque_ctx);
-    }
 
-    fn runInternal(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init, ctx: ?*anyopaque) !void {
-        if (args.len == 0) return;
+        /// Walks the command tree using the provided arguments and executes the target command,
+        /// passing the typed context to the command's run function.
+        pub fn run(self: App(CtxType), allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init, ctx: CtxType) !void {
+            if (args.len == 0) return;
 
-        // Skip the executable name (e.g. `dogu`)
-        var current_args = args[1..];
-        var current_cmd: *const command.Command = &self.root;
+            // Skip the executable name (e.g. `dogu`)
+            var current_args = args[1..];
+            var current_cmd: *const command.Command(CtxType) = &self.root;
 
         // 2. Walk the tree!
         while (current_args.len > 0) {
@@ -77,22 +65,23 @@ pub const App = struct {
         }
     }
 
-    fn printUsage(self: App, cmd: *const command.Command) void {
-        _ = self;
-        std.debug.print("\n  {s}", .{cmd.name});
-        if (cmd.description.len > 0) {
-            std.debug.print(" — {s}", .{cmd.description});
-        }
-        std.debug.print("\n\n", .{});
-
-        if (cmd.subcommands.len > 0) {
-            std.debug.print("  COMMANDS:\n", .{});
-            for (cmd.subcommands) |sub| {
-                std.debug.print("    {s: <16}{s}\n", .{ sub.name, sub.description });
+        fn printUsage(self: App(CtxType), cmd: *const command.Command(CtxType)) void {
+            _ = self;
+            std.debug.print("\n  {s}", .{cmd.name});
+            if (cmd.description.len > 0) {
+                std.debug.print(" — {s}", .{cmd.description});
             }
-            std.debug.print("\n", .{});
-        }
+            std.debug.print("\n\n", .{});
 
-        std.debug.print("  Run '{s} <command> --help' for more information.\n\n", .{cmd.name});
-    }
-};
+            if (cmd.subcommands.len > 0) {
+                std.debug.print("  COMMANDS:\n", .{});
+                for (cmd.subcommands) |sub| {
+                    std.debug.print("    {s: <16}{s}\n", .{ sub.name, sub.description });
+                }
+                std.debug.print("\n", .{});
+            }
+
+            std.debug.print("  Run '{s} <command> --help' for more information.\n\n", .{cmd.name});
+        }
+    };
+}

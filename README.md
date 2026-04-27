@@ -68,7 +68,7 @@ Teul makes it easy to map command line arguments directly to Zig structs:
 const std = @import("std");
 const App = @import("teul").App;
 const Command = @import("teul").Command;
-const generateWrapper = @import("teul").generateWrapper;
+// 1. Define your command struct
 
 // 1. Define your command struct
 const MyCmd = struct {
@@ -104,21 +104,22 @@ pub fn main(init: std.process.Init) !void {
     }
 
     // 3. Define the CLI Routing Tree
-    const root_cmd = Command{
+    const Cmd = Command(void);
+    const root_cmd = Cmd{
         .name = "my_app",
         .description = "An awesome CLI built with Teul",
-        .subcommands = &[_]Command{
+        .subcommands = &[_]Cmd{
             .{
                 .name = "do-thing",
                 .description = "Does a very important thing",
-                .run_fn = generateWrapper(MyCmd),
+                .run_fn = Cmd.wrap(MyCmd),
             },
         },
     };
 
     // 4. Initialize and Run
-    const app = App.init(root_cmd);
-    try app.run(allocator, args_list.items, init);
+    const app = App(void).init(root_cmd);
+    try app.run(allocator, args_list.items, init, {});
 }
 ```
 
@@ -170,11 +171,12 @@ pub fn main(init: std.process.Init) !void {
         .db = try DbConnection.init(),
     };
 
-    const root_cmd = Command{ ... };
-    const app = App.init(root_cmd);
+    const Cmd = teul.Command(*AppContext);
+    const root_cmd = Cmd{ ... };
+    const app = teul.App(*AppContext).init(root_cmd);
     
     // 2. Pass your context pointer here! Teul routes it safely to the executed command.
-    try app.runWithContext(allocator, args_list.items, init, &ctx);
+    try app.run(allocator, args_list.items, init, &ctx);
 }
 ```
 

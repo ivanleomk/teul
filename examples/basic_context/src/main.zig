@@ -30,23 +30,27 @@ pub fn main(init: std.process.Init) !void {
         try args_list.append(allocator, arg);
     }
 
+    // 1. Initialise our custom context
     var ctx = AppContext{
         .init = init,
         .app_version = "1.2.3",
     };
 
-    const root_cmd = teul.Command{
+    const Cmd = teul.Command(*AppContext);
+    const root_cmd = Cmd{
         .name = "app",
         .description = "A teul starter project",
-        .subcommands = &[_]teul.Command{
+        .subcommands = &[_]Cmd{
             .{
                 .name = "echo",
                 .description = "Echo a message",
-                .run_fn = teul.generateWrapper(EchoCmd),
+                .run_fn = Cmd.wrap(EchoCmd),
             },
         },
     };
 
-    const app = teul.App.init(root_cmd);
-    try app.runWithContext(allocator, args_list.items, init, &ctx);
+    const app = teul.App(*AppContext).init(root_cmd);
+    
+    // 2. Run with our custom context
+    try app.run(allocator, args_list.items, init, &ctx);
 }

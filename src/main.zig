@@ -44,19 +44,20 @@ pub fn main(init: std.process.Init) !void {
     }
 
     // 2. Define the CLI Routing Tree
-    const root_cmd = Command{
+    const Cmd = Command(void);
+    const root_cmd = Cmd{
         .name = "teul",
         .description = "The ultimate comptime CLI framework",
-        .subcommands = &[_]Command{
+        .subcommands = &[_]Cmd{
             .{
                 .name = "init",
                 .description = "Initialize a teul starter project",
-                .run_fn = generateWrapper(InitCmd),
+                .run_fn = Cmd.wrap(InitCmd),
             },
         },
     };
 
     // 3. Initialize the Router and Run!
-    const app = App.init(root_cmd);
-    try app.run(allocator, args_list.items, init);
+    const app = App(void).init(root_cmd);
+    try app.run(allocator, args_list.items, init, {});
 }
