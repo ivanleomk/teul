@@ -179,5 +179,7 @@ pub fn main(init: std.process.Init) !void {
 }
 ```
 
+> **Note:** For a complete, working example of Context Injection in action, check out the [`examples/basic_context/`](examples/basic_context) folder in this repository!
+
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request or open an issue for bug fixes or features.
