@@ -16,7 +16,7 @@ pub const App = struct {
     /// passing the provided context to the command's run function.
     pub fn runWithContext(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init, ctx: anytype) !void {
         const ptr_info = @typeInfo(@TypeOf(ctx));
-        if (ptr_info != .Pointer) {
+        if (ptr_info != .pointer) {
             @compileError("Context must be a pointer type");
         }
         const opaque_ctx: ?*anyopaque = @ptrCast(ctx);
