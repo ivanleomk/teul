@@ -11,6 +11,10 @@ const EchoCmd = struct {
 
     pub fn run(self: @This(), ctx: *AppContext) !void {
         std.debug.print("v{s}: {s}\n", .{ctx.app_version, self.message});
+        
+        // accessing gpa to prove init is available
+        _ = ctx.init.gpa;
+        std.debug.print("Successfully accessed std.process.Init.gpa!\n", .{});
     }
 };
 
@@ -28,7 +32,7 @@ pub fn main(init: std.process.Init) !void {
 
     var ctx = AppContext{
         .init = init,
-        .app_version = "1.0.0",
+        .app_version = "1.2.3",
     };
 
     const root_cmd = teul.Command{

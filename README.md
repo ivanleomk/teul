@@ -135,5 +135,49 @@ Error: missing required argument(s).
   Usage: <target> [--verbose] [--retries]
 ```
 
+## Context Injection
+
+Teul makes it easy to share state—like a database connection, HTTP client, or standard process initialization—across all your commands by injecting a custom context pointer. You can avoid repetitive initialization by creating your context once in `main()` and passing it down.
+
+Teul supports three `run` signatures natively with zero type-erasure boilerplate on your end:
+1. `pub fn run(self: @This()) !void` (No context)
+2. `pub fn run(self: @This(), init: std.process.Init) !void` (Just the standard Init)
+3. `pub fn run(self: @This(), ctx: *MyContext) !void` (Your custom state)
+
+If you use a custom context, just pass its pointer to `app.runWithContext`:
+
+```zig
+const AppContext = struct {
+    init: std.process.Init,
+    db: DbConnection,
+};
+
+const DeployCmd = struct {
+    target: []const u8,
+
+    pub fn run(self: @This(), ctx: *AppContext) !void {
+        // You have access to both your custom DB and standard init!
+        const gpa = ctx.init.gpa;
+        ctx.db.query("...");
+    }
+};
+
+pub fn main(init: std.process.Init) !void {
+    // ... setup allocator and args ...
+    
+    // 1. Create your shared context once
+    var ctx = AppContext{
+        .init = init,
+        .db = try DbConnection.init(),
+    };
+
+    const root_cmd = Command{ ... };
+    const app = App.init(root_cmd);
+    
+    // 2. Pass your context pointer here! Teul routes it safely to the executed command.
+    try app.runWithContext(allocator, args_list.items, init, &ctx);
+}
+```
+
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request or open an issue for bug fixes or features.
