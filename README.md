@@ -143,7 +143,7 @@ Teul supports two `run` shapes natively with zero type-erasure boilerplate on yo
 1. `pub fn run(self: @This()) !void` (No context)
 2. `pub fn run(self: @This(), ctx: *MyContext) !void` (Your custom state, or `std.process.Init` if you just need standard initialization)
 
-If you use a custom context, just pass its pointer to `app.runWithContext`:
+If you use a custom context, just pass its pointer to `app.run`:
 
 ```zig
 const AppContext = struct {
