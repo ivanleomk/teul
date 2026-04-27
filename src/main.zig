@@ -1,7 +1,6 @@
 const std = @import("std");
 const App = @import("app.zig").App;
 const Command = @import("command.zig").Command;
-const generateWrapper = @import("command.zig").generateWrapper;
 
 const InitCmd = struct {
     target: []const u8, // Target directory
