@@ -8,8 +8,22 @@ pub const App = struct {
         return .{ .root = root };
     }
 
-    /// Walks the command tree using the provided arguments and executes the target command.
     pub fn run(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init) !void {
+        try self.runInternal(allocator, args, app_init, null);
+    }
+
+    /// Walks the command tree using the provided arguments and executes the target command,
+    /// passing the provided context to the command's run function.
+    pub fn runWithContext(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init, ctx: anytype) !void {
+        const ptr_info = @typeInfo(@TypeOf(ctx));
+        if (ptr_info != .Pointer) {
+            @compileError("Context must be a pointer type");
+        }
+        const opaque_ctx: ?*anyopaque = @ptrCast(ctx);
+        try self.runInternal(allocator, args, app_init, opaque_ctx);
+    }
+
+    fn runInternal(self: App, allocator: std.mem.Allocator, args: []const []const u8, app_init: std.process.Init, ctx: ?*anyopaque) !void {
         if (args.len == 0) return;
 
         // Skip the executable name (e.g. `dogu`)
@@ -44,7 +58,7 @@ pub const App = struct {
         // 3. Execute the leaf command
         if (current_cmd.run_fn) |run_fn| {
             // We pass the remaining strings directly to the generated wrapper!
-            run_fn(allocator, current_args, app_init) catch |err| {
+            run_fn(allocator, current_args, app_init, ctx) catch |err| {
                 // Parse errors already printed a clean message — just exit.
                 switch (err) {
                     error.MissingRequiredArgument,
