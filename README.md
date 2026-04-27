@@ -139,10 +139,9 @@ Error: missing required argument(s).
 
 Teul makes it easy to share state—like a database connection, HTTP client, or standard process initialization—across all your commands by injecting a custom context pointer. You can avoid repetitive initialization by creating your context once in `main()` and passing it down.
 
-Teul supports three `run` signatures natively with zero type-erasure boilerplate on your end:
+Teul supports two `run` shapes natively with zero type-erasure boilerplate on your end:
 1. `pub fn run(self: @This()) !void` (No context)
-2. `pub fn run(self: @This(), init: std.process.Init) !void` (Just the standard Init)
-3. `pub fn run(self: @This(), ctx: *MyContext) !void` (Your custom state)
+2. `pub fn run(self: @This(), ctx: *MyContext) !void` (Your custom state, or `std.process.Init` if you just need standard initialization)
 
 If you use a custom context, just pass its pointer to `app.runWithContext`:
 
