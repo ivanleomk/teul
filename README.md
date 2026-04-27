@@ -68,7 +68,6 @@ Teul makes it easy to map command line arguments directly to Zig structs:
 const std = @import("std");
 const App = @import("teul").App;
 const Command = @import("teul").Command;
-// 1. Define your command struct
 
 // 1. Define your command struct
 const MyCmd = struct {
