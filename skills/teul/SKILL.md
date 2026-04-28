@@ -114,6 +114,14 @@ pub fn main(init: std.process.Init) !void {
 
 ## Scaffolding New Projects
 
+### Important Note for AI Agents
+If the `teul` command is not found, you must download the latest release before running the init command. Do not assume the binary is already installed.
+Run the following install script to fetch the latest binary and install it to `~/.local/bin`:
+```bash
+curl -sSL https://raw.githubusercontent.com/ivanleomk/teul/main/install.sh | bash
+```
+Once installed, it will be available in `~/.local/bin/teul` (ensure this directory is in your PATH).
+
 Teul includes an `init` binary for easy setup. It vendors the framework directly into `src/teul/`, eliminating external dependencies.
 
 ```bash
