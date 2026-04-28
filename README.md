@@ -11,6 +11,7 @@ It provides a clean, type-safe, and boilerplate-free way to build robust command
 - **Clean Error Handling**: User-friendly validation errors. No messy stack traces when a user provides an unknown flag or misses a required argument.
 - **Standard Flag Syntax**: Supports `--flag`, `--key=value`, and `--key value` syntax out of the box.
 - **Built-in `init` Command**: Includes a scaffolding executable to bootstrap your new CLI project instantly.
+- **AI Agent Skill**: Includes a built-in skill for Vercel's `skills.sh` registry, allowing AI agents to understand and use Teul perfectly (`npx skills add ivanleomk/teul`).
 
 ## Getting Started
 
@@ -20,9 +21,11 @@ Teul provides its own CLI tool to instantly scaffold a new project with the fram
 
 **Option 1: Download Release Binary**
 1. Download the latest binary for your platform from the [Releases page](https://github.com/ivanleomk/teul/releases).
-2. Make it executable (`chmod +x teul`) and run it:
+2. Make it executable, optionally alias it or move it to your path, and run it:
 ```bash
-./teul init ./my-new-cli
+chmod +x teul
+alias teul="$(pwd)/teul" # or move to /usr/local/bin
+teul init ./my-new-cli
 cd ./my-new-cli
 zig build run -- --help
 ```
